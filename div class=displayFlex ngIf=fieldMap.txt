@@ -1,76 +1,42 @@
- <div class="displayFlex" *ngIf="fieldMap?.planType?.isVisible">
-            <mat-form-field>
-                <mat-label><span message-key="OAO_NEWRETIREMENT_IRATYPE_LBL"></span></mat-label>
-                <mat-select formControlName="planType"
-                    (selectionChange)="planTypeSelect($event)">
-                    <mat-option value=""><span message-key="OAO_NEWRETIREMENT_PLANTYPE_SELECTOPT_LBL"></span>
-                    </mat-option>
-                    <mat-option *ngFor="let obj of planType" [value]="obj.name">
-                        {{ obj.value }}
-                    </mat-option>
-                </mat-select>
-                <mat-error *ngIf="form.invalid">{{getErrorMessage('planType')}}</mat-error>
-            </mat-form-field>
-        </div>
+    this.maxBeneficiaryAllwd = this.context.getFormPropertyValue(this.formName, 'maxIssuedBeneficiary', 8);
 
- bindMiscData(category, data) {
-    switch (category) {
-      case CodeCategoryConstants.TIN_TYPE:
-        this.taxtypes = data.filter(data => { return data.name != MB.CONST.CREDENTIALS.TAXID });;
-        break;
-      case CodeCategoryConstants.STATE_CODE:
-        this.statecodes = data;
-        break;
-      case CodeCategoryConstants.IRA_PLAN_TYPE:
-        this.planType = data;
-        break;
-      case CodeCategoryConstants.EEDUCATIONAL_IRA_TYPE:
-        this.planType = data;
-        break;
-      case CodeCategoryConstants.TRADITIONAL_IRA_TYPE:
-        this.planType = data;
-        break;
-      case CodeCategoryConstants.ROTH_IRA_TYPE:
-        this.planType = data;
-        break;
-      case CodeCategoryConstants.ACCOUNT_WITHHOLD:
-        this.withHold = data;
-        break;
-      case CodeCategoryConstants.IRA_BENEFICIARY_TYPE:
-        this.relationships = data;
-        break;
+instead of 5 i want to use maxBeneficiaryAllwd how to do this
+
+ addBeneficiary(): void {
+    this.beneficiary = this.beneficiaryArray;
+    if (this.beneficiary?.length > 5) {
+      this.showHideBeneficiaryBtn = false;
+    } else {
+      this.showHideBeneficiaryBtn = true;
+      this.addBenificiaryFields('');
     }
   }
 
-planTypeSelect(event: MatSelectChange) {
-    if (event.value !== '') {
-      if (this.account?.taxPlans?.length) {
-        this.isPlanTypeUpdate = (this.account.taxPlans[0].planType !== event.value) ? true : false;
-      }
-      this.busyIndicator.show();
-      this.accountService.getPlanTypeInd(event.value).subscribe((data: any) => {
-        this.busyIndicator.hide();
-        if (data?.result?.length) {
-          let columns = data?.result[0]?.columns ? data.result[0].columns : [];
-          if (columns?.length) {
-            let planIndObj = columns.filter(e => { return e.name === 'BCRE_PT_DEF_INC_IND' })[0];
-            if (planIndObj) this.planTypeInd = planIndObj.value;
-          }
-          if (this.planNumCreated?.length) {
-            this.form.patchValue({
-              planNumber: this.planNumCreated[0].value + this.planTypeInd + 1
-            });
-          }
-          this.showEmployerTinField = (this.planTypeInd === 'Q' || this.planTypeInd === 'S') ? true : false;
-          if (this.showEmployerTinField) {
-            this.form.controls.employerTin.enable();
-          } else {
-            this.form.controls.employerTin.disable();
-          }
-        }
-      }, (error) => {
-        this.busyIndicator.hide();
-        MB.Notifications.showErrorMessage(error);
-      });
-    }
-  }
+
+iv *ngIf="showHideBeneficiary">
+            <div formArrayName="beneficiary" *ngFor="let creds of form.get('beneficiary').controls let i = index">
+                <div [formGroupName]="i">
+                    <div class="displayFlex margin-top-2rm">
+                        <div class="flex80">
+                            <div class="displayFlex">
+                                <label class="displayBlock mr10"
+                                    message-key="OAO_NEWRETIREMENT_BENEFICIARY_LBL"></label>
+                                <div>{{i+1}}</div>
+                                <div class="margin-left-15px" *ngIf="i===7"><span
+                                        message-key="OAO_NEWRETIREMENT_BENEFICLIMTT_LBL"></span></div>
+                            </div>
+                            <div class="displayFlex" *ngIf="fieldMap?.benficType?.isVisible">
+                                <mat-radio-group class="flexDirectionRow" (change)="changePrimContgTypeInd($event,i)"
+                                    formControlName="benficType">
+                                    <mat-radio-button class="mr30" *ngFor="let control of beneficControls"
+                                        [value]="control.value">
+                                        {{control.label}}
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </div>
+                        <div class="flex20" [attr.disabled]="disabled" (click)="removeBeneficiary(i)">
+                            <span class="tertiaryText" role="button" message-key="OAO_NEWRETIREMENT_REMOVE_LBL">
+                            </span>
+                        </div>
+                    </div>
