@@ -1,4 +1,8 @@
- // getting data by using category codes
+this.currentProduct?.category === "Traditional IRA's") {
+                            } else if (this.currentProduct?.category === "Educational IRA's") {
+                           } else if (this.currentProduct?.category === "Roth IRA's 
+
+// getting data by using category codes
   bindMiscData(category, data) {
     switch (category) {
         case CodeCategoryConstants.TIN_TYPE:
@@ -19,17 +23,15 @@ this.taxtypes = data.filter(data => data.name === MB.CONST.CREDENTIALS.TAXID);
    
         // Combine IRA plan types into a single case
         case CodeCategoryConstants.TRADITIONAL_IRA_TYPE:
+          this.tradionalType = data;
+          break;
         case CodeCategoryConstants.EDUCATIONAL_IRA_TYPE:
+          this.educationalType = data;
+          break;
         case CodeCategoryConstants.ROTH_IRA_TYPE:
-            // Assign the planType based on the current product category
-            if (this.currentProduct?.category === "Traditional IRA's") {
-                this.planType = data.filter(plan => plan.category === CodeCategoryConstants.TRADITIONAL_IRA_TYPE);
-            } else if (this.currentProduct?.category === "Educational IRA's") {
-                this.planType = data.filter(plan => plan.category === CodeCategoryConstants.EDUCATIONAL_IRA_TYPE);
-            } else if (this.currentProduct?.category === "Roth IRA's") {
-                this.planType = data.filter(plan => plan.category === CodeCategoryConstants.ROTH_IRA_TYPE);
-            }
-            break;
+          this.rothType = data;
+          break;
+          
     }
 }
-the problem is filter(plan => plan.category === CodeCategoryConstants.TRADITIONAL_IRA_TYPE);  is undefined the data is coming but it is filtered out and not goint to plantype adjust in such a way three cases works in different 3 if conditions
+i want that if this.currentProduct?.category === "Traditional IRA's"  set this.plantype = this.tradionalType  i mean i want to pass the this.tradionalType data inside this.plantype same for others
