@@ -15,7 +15,6 @@ getPercentage() {
     this.totalCont = totalContigen;
   }
 
-make changes according to below condition i want that when below conditions are not met make forcontrollername seterror as true and display error message 
  <div class="displayFlex" *ngIf="fieldMap?.ownershipPercentage?.isVisible">
                         <mat-form-field>
                             <mat-label><span message-key="OAO_NEWRETIREMENT_OWNERSHIP_LBL"></span></mat-label>
@@ -35,15 +34,31 @@ If percentage is more than 100%, upon clicking on continue the system will displ
 Total percentage value must be 100% or 0% for Primary and Contingent
 
 
+make changes according to above condition i want that when above conditions are not met make forcontrollername seterror as true and display error message like we are doing in getErrorMessage i want same way in geBeneficiaryError 
 
+
+geBeneficiaryError(formControlName: string, i) {
+    const group: any = this.beneficiaryArray.controls[i];
+    const errors = group.controls[formControlName].errors;
+    return this.validationService.getErrorMesssages(errors, formControlName, this.fields, true);
+  }
 here is the example for reference
 
- if (this.validateemail.transform(group.controls[formControlName].value)) {
+  getErrorMessage(i, formControlName: string) {
+    const group: any = this.emailArray.controls[i];
+    const errors = group.controls[formControlName].errors;
+
+    if ((this.pageName == 'addCustForm' && formControlName == 'emailCtrl') && group.controls[formControlName].value) {
+      if (this.validateemail.transform(group.controls[formControlName].value)) {
         group.controls[formControlName].setErrors({ optionalEmailAddress: true });
         return MB.Messages['ADD_CUSTOMER_EMAIL_FORMAT_MSG'];
       } else group.controls[formControlName].setErrors(null);
-    } else if (this.pageName === 'addCustForm' && formControlName === 'emailTypeCtrl' && errors && errors.duplicate) {
+    }else if (formControlName === 'emailTypeCtrl' && errors && errors.duplicate) {
+      return MB.Messages['OAO_CUSTINFO_EMAIL_TYPE_DUPLICATE'];
+    }  else if (this.pageName === 'addCustForm' && formControlName === 'emailTypeCtrl' && errors && errors.duplicate) {
       return MB.Messages['OAO_CUSTINFO_EMAIL_TYPE_DUPLICATE'];
     }
+    return this.validationRulesService.getErrorMesssages(errors, formControlName, this.fields, true);
+  }
 
 
