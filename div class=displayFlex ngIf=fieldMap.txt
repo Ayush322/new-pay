@@ -1,42 +1,27 @@
-    this.maxBeneficiaryAllwd = this.context.getFormPropertyValue(this.formName, 'maxIssuedBeneficiary', 8);
-
-instead of 5 i want to use maxBeneficiaryAllwd how to do this
-
- addBeneficiary(): void {
-    this.beneficiary = this.beneficiaryArray;
-    if (this.beneficiary?.length > 5) {
-      this.showHideBeneficiaryBtn = false;
-    } else {
-      this.showHideBeneficiaryBtn = true;
-      this.addBenificiaryFields('');
+getPercentage() {
+    const ben = this.beneficiaryArray;
+    let length = ben?.length - 1;
+    let totalPrimary = 0;
+    let totalContigen = 0;
+    for (let i = 0; i <= length; i++) {
+      if (ben.at(i).get('benficType').value === true && ben.at(i).get('ownershipPercentage').value != null) {
+        totalPrimary += parseFloat(ben.at(i).get('ownershipPercentage').value);
+      }
+      if (ben.at(i).get('benficType').value === false && ben.at(i).get('ownershipPercentage').value != null) {
+        totalContigen += parseFloat(ben.at(i).get('ownershipPercentage').value);
+      }
     }
+    this.totalPrim = totalPrimary;
+    this.totalCont = totalContigen;
   }
 
+make changes according to below condition
 
-iv *ngIf="showHideBeneficiary">
-            <div formArrayName="beneficiary" *ngFor="let creds of form.get('beneficiary').controls let i = index">
-                <div [formGroupName]="i">
-                    <div class="displayFlex margin-top-2rm">
-                        <div class="flex80">
-                            <div class="displayFlex">
-                                <label class="displayBlock mr10"
-                                    message-key="OAO_NEWRETIREMENT_BENEFICIARY_LBL"></label>
-                                <div>{{i+1}}</div>
-                                <div class="margin-left-15px" *ngIf="i===7"><span
-                                        message-key="OAO_NEWRETIREMENT_BENEFICLIMTT_LBL"></span></div>
-                            </div>
-                            <div class="displayFlex" *ngIf="fieldMap?.benficType?.isVisible">
-                                <mat-radio-group class="flexDirectionRow" (change)="changePrimContgTypeInd($event,i)"
-                                    formControlName="benficType">
-                                    <mat-radio-button class="mr30" *ngFor="let control of beneficControls"
-                                        [value]="control.value">
-                                        {{control.label}}
-                                    </mat-radio-button>
-                                </mat-radio-group>
-                            </div>
-                        </div>
-                        <div class="flex20" [attr.disabled]="disabled" (click)="removeBeneficiary(i)">
-                            <span class="tertiaryText" role="button" message-key="OAO_NEWRETIREMENT_REMOVE_LBL">
-                            </span>
-                        </div>
-                    </div>
+Total of Primary Beneficiary must be 0% or 100%
+Total of Contingent Beneficiary must be 0% or 100%
+If less than100% entered, the system will display the following message:
+Total percentage value must be 100% or 0% for Primary and Contingent
+If percentage is more than 100%, upon clicking on continue the system will display the following message: 
+Total percentage value must be 100% or 0% for Primary and Contingent
+
+
