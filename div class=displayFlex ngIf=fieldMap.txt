@@ -1,64 +1,35 @@
-getPercentage() {
-    const ben = this.beneficiaryArray;
-    let length = ben?.length - 1;
-    let totalPrimary = 0;
-    let totalContigen = 0;
-    for (let i = 0; i <= length; i++) {
-      if (ben.at(i).get('benficType').value === true && ben.at(i).get('ownershipPercentage').value != null) {
-        totalPrimary += parseFloat(ben.at(i).get('ownershipPercentage').value);
-      }
-      if (ben.at(i).get('benficType').value === false && ben.at(i).get('ownershipPercentage').value != null) {
-        totalContigen += parseFloat(ben.at(i).get('ownershipPercentage').value);
-      }
+ // getting data by using category codes
+  bindMiscData(category, data) {
+    switch (category) {
+        case CodeCategoryConstants.TIN_TYPE:
+this.taxtypes = data.filter(data => data.name === MB.CONST.CREDENTIALS.TAXID);
+            break;
+
+        case CodeCategoryConstants.STATE_CODE:
+            this.statecodes = data;
+            break;
+
+        case CodeCategoryConstants.ACCOUNT_WITHHOLD:
+            this.withHold = data;
+            break;
+
+        case CodeCategoryConstants.IRA_BENEFICIARY_TYPE:
+            this.relationships = data;
+            break;
+   
+        // Combine IRA plan types into a single case
+        case CodeCategoryConstants.TRADITIONAL_IRA_TYPE:
+        case CodeCategoryConstants.EDUCATIONAL_IRA_TYPE:
+        case CodeCategoryConstants.ROTH_IRA_TYPE:
+            // Assign the planType based on the current product category
+            if (this.currentProduct?.category === "Traditional IRA's") {
+                this.planType = data.filter(plan => plan.category === CodeCategoryConstants.TRADITIONAL_IRA_TYPE);
+            } else if (this.currentProduct?.category === "Educational IRA's") {
+                this.planType = data.filter(plan => plan.category === CodeCategoryConstants.EDUCATIONAL_IRA_TYPE);
+            } else if (this.currentProduct?.category === "Roth IRA's") {
+                this.planType = data.filter(plan => plan.category === CodeCategoryConstants.ROTH_IRA_TYPE);
+            }
+            break;
     }
-    this.totalPrim = totalPrimary;
-    this.totalCont = totalContigen;
-  }
-
- <div class="displayFlex" *ngIf="fieldMap?.ownershipPercentage?.isVisible">
-                        <mat-form-field>
-                            <mat-label><span message-key="OAO_NEWRETIREMENT_OWNERSHIP_LBL"></span></mat-label>
-                            <input type="text" zInput z-interestRate [attr.maxlength]="13"
-                                (blur)="getPercentage(i)"
-                                formControlName="ownershipPercentage">
-                            <mat-error *ngIf="form.invalid">{{geBeneficiaryError('ownershipPercentage',i)}}
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-
-Total of Primary Beneficiary must be 0% or 100%
-Total of Contingent Beneficiary must be 0% or 100%
-If less than100% entered, the system will display the following message:
-Total percentage value must be 100% or 0% for Primary and Contingent
-If percentage is more than 100%, upon clicking on continue the system will display the following message: 
-Total percentage value must be 100% or 0% for Primary and Contingent
-
-
-make changes according to above condition i want that when above conditions are not met make forcontrollername seterror as true and display error message like we are doing in getErrorMessage i want same way in geBeneficiaryError 
-
-
-geBeneficiaryError(formControlName: string, i) {
-    const group: any = this.beneficiaryArray.controls[i];
-    const errors = group.controls[formControlName].errors;
-    return this.validationService.getErrorMesssages(errors, formControlName, this.fields, true);
-  }
-here is the example for reference
-
-  getErrorMessage(i, formControlName: string) {
-    const group: any = this.emailArray.controls[i];
-    const errors = group.controls[formControlName].errors;
-
-    if ((this.pageName == 'addCustForm' && formControlName == 'emailCtrl') && group.controls[formControlName].value) {
-      if (this.validateemail.transform(group.controls[formControlName].value)) {
-        group.controls[formControlName].setErrors({ optionalEmailAddress: true });
-        return MB.Messages['ADD_CUSTOMER_EMAIL_FORMAT_MSG'];
-      } else group.controls[formControlName].setErrors(null);
-    }else if (formControlName === 'emailTypeCtrl' && errors && errors.duplicate) {
-      return MB.Messages['OAO_CUSTINFO_EMAIL_TYPE_DUPLICATE'];
-    }  else if (this.pageName === 'addCustForm' && formControlName === 'emailTypeCtrl' && errors && errors.duplicate) {
-      return MB.Messages['OAO_CUSTINFO_EMAIL_TYPE_DUPLICATE'];
-    }
-    return this.validationRulesService.getErrorMesssages(errors, formControlName, this.fields, true);
-  }
-
-
+}
+the problem is filter(plan => plan.category === CodeCategoryConstants.TRADITIONAL_IRA_TYPE);  is undefined the data is coming but it is filtered out and not goint to plantype adjust in such a way three cases works in different 3 if conditions
