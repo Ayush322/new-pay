@@ -1,47 +1,47 @@
-getPercentage() {
-    const ben = this.beneficiaryArray;
-    let length = ben?.length - 1;
-    let totalPrimary = 0;
-    let totalContigen = 0;
-
-    for (let i = 0; i <= length; i++) {
-  const ownershipPercentage = parseFloat(ben.at(i).get('ownershipPercentage').value);
-
-  if (ben.at(i).get('benficType').value === true && !isNaN(ownershipPercentage)) {
-        totalPrimary += ownershipPercentage;
-      }
-  if (ben.at(i).get('benficType').value === false && !isNaN(ownershipPercentage)) {
-        totalContigen += ownershipPercentage;
-      }
-    }
-
-    this.totalPrim = totalPrimary;
-    this.totalCont = totalContigen;
-
-    // Check conditions for Primary and Contingent beneficiaries
-    if ((totalPrimary !== 0 && totalPrimary !== 100  ) || (totalContigen !== 0 && totalContigen !== 100)) {
-      for (let i = 0; i <= length; i++) {
-  const ownershipControl = ben.at(i).get('ownershipPercentage');
-        ownershipControl.setErrors({ totalPercentageInvalid: true });
-      }
-    }  else {
-      for (let i = 0; i <= length; i++) {
-  const ownershipControl = ben.at(i).get('ownershipPercentage');
-        ownershipControl.setErrors(null); // Clear the error if condition is met
-      }
+checkTaxType(index: number) {
+    if (this.beneficiaryArray.at(index).get('taxIdType').value !== BankerOpenAccountConstants.NOTAXID) {
+      this.beneficiaryArray.at(index).get('beneficiaryTaxId').enable();
+      return true;
+    } else {
+      this.beneficiaryArray.at(index).get('beneficiaryTaxId').disable();
+      return false;
     }
   }
 
-geBeneficiaryError(formControlName: string, i) {
-    const group: any = this.beneficiaryArray.controls[i];
-    const errors = group.controls[formControlName].errors;
+<div class="displayFlex" *ngIf="fieldMap?.beneficiaryRel?.isVisible">
+                        <mat-form-field>
+                            <mat-label><span message-key="OAO_NEWRETIREMENT_RELATIONSHIP_LBL"></span></mat-label>
+                            <mat-select
+                                formControlName="beneficiaryRel">
+                                <mat-option value=""><span
+                                        message-key="OAO_NEWRETIREMENT_PLANTYPE_SELECTOPT_LBL"></span></mat-option>
+                                <mat-option *ngFor="let obj of relationships" [value]="obj.name">
+                                    {{ obj.value }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="form.invalid">
+                                {{geBeneficiaryError('beneficiaryRel',i)}}</mat-error>
+                        </mat-form-field>
+                    </div>
 
-      // Handle the custom error for total percentage invalid
-  if (errors && errors.totalPercentageInvalid) {
-    return MB.Messages['OAO_NEWRETIREMENT_OWNERSHIPCHECK_LBL'];
-  }
-    return this.validationService.getErrorMesssages(errors, formControlName, this.fields, true);
-  }
-add below check also in above code
-If no primary information available and Contingent only available, the system will display the following message:
-User cannot add a Contingent beneficiary without having 100% designation of Primary
+
+};
+  bindMiscData(category, data) {
+    switch (category) {
+       
+        case CodeCategoryConstants.IRA_BENEFICIARY_TYPE:
+            this.relationships = data;
+            break;
+
+}
+
+what logic should be implemented to get this 
+Relationship is the field andthe valueinside it is below
+
+Spouse
+Non-Spouse
+Entity/Trust
+Estate
+
+If Estate value is selected, the TIN information is not required. 
+Add this value to the current list.
