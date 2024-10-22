@@ -1,37 +1,28 @@
-this.currentProduct?.category === "Traditional IRA's") {
-                            } else if (this.currentProduct?.category === "Educational IRA's") {
-                           } else if (this.currentProduct?.category === "Roth IRA's 
+ taxIdChange(event: MatSelectChange, index: number) {
+    const ben = this.beneficiaryArray;
+    ben.controls[index].get('beneficiaryTaxId');
+    if (event.value === BankerOpenAccountConstants.NOTAXID) {
+      this.checkTaxType(index);
+    }
+  }
+  checkTaxType(index: number) {
+    if (this.beneficiaryArray.at(index).get('taxIdType').value !== BankerOpenAccountConstants.NOTAXID) {
+      this.beneficiaryArray.at(index).get('beneficiaryTaxId').enable();
+      return true;
+    } else {
+      this.beneficiaryArray.at(index).get('beneficiaryTaxId').disable();
+      return false;
+    }
+  }
 
-// getting data by using category codes
-  bindMiscData(category, data) {
+
+
+ bindMiscData(category, data) {
     switch (category) {
-        case CodeCategoryConstants.TIN_TYPE:
-this.taxtypes = data.filter(data => data.name === MB.CONST.CREDENTIALS.TAXID);
-            break;
-
-        case CodeCategoryConstants.STATE_CODE:
-            this.statecodes = data;
-            break;
-
-        case CodeCategoryConstants.ACCOUNT_WITHHOLD:
-            this.withHold = data;
-            break;
-
+       
         case CodeCategoryConstants.IRA_BENEFICIARY_TYPE:
             this.relationships = data;
             break;
-   
-        // Combine IRA plan types into a single case
-        case CodeCategoryConstants.TRADITIONAL_IRA_TYPE:
-          this.tradionalType = data;
-          break;
-        case CodeCategoryConstants.EDUCATIONAL_IRA_TYPE:
-          this.educationalType = data;
-          break;
-        case CodeCategoryConstants.ROTH_IRA_TYPE:
-          this.rothType = data;
-          break;
-          
-    }
+
+            }
 }
-i want that if this.currentProduct?.category === "Traditional IRA's"  set this.plantype = this.tradionalType  i mean i want to pass the this.tradionalType data inside this.plantype same for others
