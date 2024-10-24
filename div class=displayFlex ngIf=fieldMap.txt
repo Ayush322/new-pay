@@ -1,47 +1,100 @@
-checkTaxType(index: number) {
-    if (this.beneficiaryArray.at(index).get('taxIdType').value !== BankerOpenAccountConstants.NOTAXID) {
-      this.beneficiaryArray.at(index).get('beneficiaryTaxId').enable();
-      return true;
-    } else {
-      this.beneficiaryArray.at(index).get('beneficiaryTaxId').disable();
-      return false;
+[Verify Titling Ownership box is displayed below the Titling Type box  
+
+The Titling Ownership is not enabled until the user selects an option for the Titling Type
+
+If the user changes the Titling Type, the system clears the Titling Ownership option selected and removes any applicant from the Titling boxes ]
+
+
+make the changes in the below code based on the above description
+
+
+<div class="width50" *ngIf="accountTitles?.length">
+    <mat-form-field [ngClass]="{'mat-form-field-invalid customError': showTitleError }">
+      <mat-label><span message-key="OAO_TITLING_TITLING_TYPE_LBL"></span></mat-label>
+      <mat-select formControlName="titling"
+        (selectionChange)="changeTitlingOpt($event)">
+        <mat-option><span message-key="OAO_TITLING_TITLING_TYPE_SELECTOPTION_LBL"></span>
+        </mat-option>
+        <ng-container *ngFor="let acctTitling of accountTitles">
+          <mat-option *ngIf="acctTitling?.descriptions?.length" [value]="acctTitling.id">
+            {{acctTitling?.descriptions[0]?.description}}
+          </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+    <mat-error *ngIf="showTitleError">
+      <span message-key="OAO_TITLING_ERROR_MSG"></span>
+    </mat-error>
+  </div>
+
+
+
+<!-- Titling ownership -->
+  <div class="width50" *ngIf="accountOwnerTitles?.length">
+    <mat-form-field [ngClass]="{'mat-form-field-invalid customError': showTitleError }">
+      <mat-label><span message-key="BAO_TITLING_TITLING_OWNER_LBL"></span></mat-label>
+      <mat-select formControlName="titlingOwner"
+        (selectionChange)="changeTitlingOwnOpt($event)">
+        <mat-option><span message-key="OAO_TITLING_TITLING_TYPE_SELECTOPTION_LBL"></span>
+        </mat-option>
+        <ng-container *ngFor="let acctOwnerTitling of accountOwnerTitles">
+          <mat-option *ngIf="acctOwnerTitling?.descriptions?.length" [value]="acctOwnerTitling.id">
+            {{acctOwnerTitling?.descriptions[0]?.description}}
+          </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+    <!-- <mat-error *ngIf="showTitleError">
+      <span message-key="OAO_TITLING_ERROR_MSG"></span>
+    </mat-error> -->
+  </div>
+
+
+  /* change Titling Opt */
+  changeTitlingOpt(event) {
+    let titlingID = event.value;
+    if (titlingID) {
+      this.busyIndicator.show();
+      if (this.acctRelationship?.length) {
+        this.acctRelationship.forEach((acct) => {
+          if (acct.customers) {
+            Array.prototype.push.apply(this.unassignedArr, acct.customers);
+            acct.customers = [];
+          }
+        });
+      }
+      this.applicationService.getAcctRelationship(titlingID).subscribe((data) => {
+        this.busyIndicator.hide();
+        if (data?.result?.length) {
+          this.acctRelationship = this.getBusinessFilteredAcctRelationship(data.result);
+          this.acctRelationship.forEach((acct) => {
+            acct.customers = [];
+          });
+        }
+      });
     }
   }
-
-<div class="displayFlex" *ngIf="fieldMap?.beneficiaryRel?.isVisible">
-                        <mat-form-field>
-                            <mat-label><span message-key="OAO_NEWRETIREMENT_RELATIONSHIP_LBL"></span></mat-label>
-                            <mat-select
-                                formControlName="beneficiaryRel">
-                                <mat-option value=""><span
-                                        message-key="OAO_NEWRETIREMENT_PLANTYPE_SELECTOPT_LBL"></span></mat-option>
-                                <mat-option *ngFor="let obj of relationships" [value]="obj.name">
-                                    {{ obj.value }}
-                                </mat-option>
-                            </mat-select>
-                            <mat-error *ngIf="form.invalid">
-                                {{geBeneficiaryError('beneficiaryRel',i)}}</mat-error>
-                        </mat-form-field>
-                    </div>
-
-
-};
-  bindMiscData(category, data) {
-    switch (category) {
-       
-        case CodeCategoryConstants.IRA_BENEFICIARY_TYPE:
-            this.relationships = data;
-            break;
-
-}
-
-what logic should be implemented to get this 
-Relationship is the field andthe valueinside it is below
-
-Spouse
-Non-Spouse
-Entity/Trust
-Estate
-
-If Estate value is selected, the TIN information is not required. 
-Add this value to the current list.
+/* change Titling Ownership Opt */
+  changeTitlingOwnOpt(event) {
+    let titlingID = event.value;
+    if (titlingID) {
+      this.busyIndicator.show();
+      if (this.acctRelationship?.length) {
+        this.acctRelationship.forEach((acct) => {
+          if (acct.customers) {
+            Array.prototype.push.apply(this.unassignedArr, acct.customers);
+            acct.customers = [];
+          }
+        });
+      }
+      this.applicationService.getAcctRelationship(titlingID).subscribe((data) => {
+        this.busyIndicator.hide();
+        if (data?.result?.length) {
+          this.acctRelationship = this.getBusinessFilteredAcctRelationship(data.result);
+          this.acctRelationship.forEach((acct) => {
+            acct.customers = [];
+          });
+        }
+      });
+    }
+  }
